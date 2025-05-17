@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像元数据检测与取证分析系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+            max-height: 300px;
+        }
+        .error {
+            color: red;
+        }
+        .warning {
+            color: orange;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>图像元数据检测与取证分析系统</h1>
+    <p>本页面演示如何使用JavaScript客户端与图像元数据检测与取证分析API进行交互。</p>
+    
+    <div class="section">
+        <h2>1. 健康检查</h2>
+        <p>检查API服务是否正常运行。</p>
+        <button id="healthCheck">检查API状态</button>
+        <pre id="healthResult">结果将显示在这里...</pre>
+    </div>
+    
+    <div class="section">
+        <h2>2. 提取图像元数据</h2>
+        <p>上传图像并提取其元数据信息。</p>
+        <input type="file" id="metadataFile" accept="image/*">
+        <button id="extractMetadata">提取元数据</button>
+        <pre id="metadataResult">结果将显示在这里...</pre>
+    </div>
+    
+    <div class="section">
+        <h2>3. 批量提取元数据</h2>
+        <p>上传多个图像并批量提取元数据。</p>
+        <input type="file" id="batchFiles" accept="image/*" multiple>
+        <button id="batchExtract">批量提取</button>
+        <pre id="batchResult">结果将显示在这里...</pre>
+    </div>
+    
+    <div class="section">
+        <h2>4. 图像取证分析</h2>
+        <p>分析图像是否被篡改。</p>
+        <input type="file" id="forensicsFile" accept="image/*">
+        <button id="analyzeForensics">分析图像</button>
+        <pre id="forensicsResult">结果将显示在这里...</pre>
+        <div id="tamperingWarning"></div>
+    </div>
+    
+    <script src="metadata_client.js"></script>
+    <script>
+        // 创建客户端实例
+        const client = new ImageForensicsClient();
+        
+        // 格式化JSON输出
+        function formatJSON(data) {
+            return JSON.stringify(data, null, 2);
+        }
+        
+        // 健康检查
+        document.getElementById('healthCheck').addEventListener('click', async () => {
+            const resultElement = document.getElementById('healthResult');
+            resultElement.textContent = '正在检查...';
+            
+            try {
+                const result = await client.checkHealth();
+                resultElement.textContent = formatJSON(result);
+                
+                if (result.status === 'ok') {
+                    resultElement.classList.add('success');
+                } else {
+                    resultElement.classList.add('error');
+                }
+            } catch (error) {
+                resultElement.textContent = `错误: ${error.message}`;
+                resultElement.classList.add('error');
+            }
+        });
+        
+        // 提取元数据
+        document.getElementById('extractMetadata').addEventListener('click', async () => {
+            const fileInput = document.getElementById('metadataFile');
+            const resultElement = document.getElementById('metadataResult');
+            
+            if (!fileInput.files.length) {
+                resultElement.textContent = '请选择一个图像文件';
+                resultElement.classList.add('error');
+                return;
+            }
+            
+            resultElement.textContent = '正在提取元数据...';
+            resultElement.classList.remove('error', 'success');
+            
+            try {
+                const result = await client.extractMetadata(fileInput.files[0]);
+                resultElement.textContent = formatJSON(result);
+                
+                if (result.status === 'success') {
+                    resultElement.classList.add('success');
+                } else {
+                    resultElement.classList.add('error');
+                }
+            } catch (error) {
+                resultElement.textContent = `错误: ${error.message}`;
+                resultElement.classList.add('error');
+            }
+        });
+        
+        // 批量提取元数据
+        document.getElementById('batchExtract').addEventListener('click', async () => {
+            const fileInput = document.getElementById('batchFiles');
+            const resultElement = document.getElementById('batchResult');
+            
+            if (!fileInput.files.length) {
+                resultElement.textContent = '请选择至少一个图像文件';
+                resultElement.classList.add('error');
+                return;
+            }
+            
+            resultElement.textContent = `正在批量提取 ${fileInput.files.length} 个文件的元数据...`;
+            resultElement.classList.remove('error', 'success');
+            
+            try {
+                const result = await client.batchExtractMetadata(Array.from(fileInput.files));
+                resultElement.textContent = formatJSON(result);
+                
+                if (result.status === 'success') {
+                    resultElement.classList.add('success');
+                } else {
+                    resultElement.classList.add('error');
+                }
+            } catch (error) {
+                resultElement.textContent = `错误: ${error.message}`;
+                resultElement.classList.add('error');
+            }
+        });
+        
+        // 取证分析
+        document.getElementById('analyzeForensics').addEventListener('click', async () => {
+            const fileInput = document.getElementById('forensicsFile');
+            const resultElement = document.getElementById('forensicsResult');
+            const warningElement = document.getElementById('tamperingWarning');
+            
+            if (!fileInput.files.length) {
+                resultElement.textContent = '请选择一个图像文件';
+                resultElement.classList.add('error');
+                warningElement.innerHTML = '';
+                return;
+            }
+            
+            resultElement.textContent = '正在进行取证分析...';
+            resultElement.classList.remove('error', 'success');
+            warningElement.innerHTML = '';
+            
+            try {
+                const result = await client.analyzeForensics(fileInput.files[0]);
+                resultElement.textContent = formatJSON(result);
+                
+                if (result.status === 'success') {
+                    resultElement.classList.add('success');
+                    
+                    // 判断图像是否被篡改
+                    const isTampered = result.forensics?.is_tampered;
+                    if (isTampered) {
+                        let warningHTML = '<div class="warning">警告: 图像可能已被篡改!</div><ul>';
+                        const indicators = result.forensics?.tampering_indicators || [];
+                        
+                        indicators.forEach((indicator, index) => {
+                            warningHTML += `<li class="warning">篡改指标 ${index + 1}: ${indicator.description}</li>`;
+                        });
+                        
+                        warningHTML += '</ul>';
+                        warningElement.innerHTML = warningHTML;
+                    } else {
+                        warningElement.innerHTML = '<div class="success">图像未检测到篡改痕迹</div>';
+                    }
+                } else {
+                    resultElement.classList.add('error');
+                }
+            } catch (error) {
+                resultElement.textContent = `错误: ${error.message}`;
+                resultElement.classList.add('error');
+            }
+        });
+    </script>
+</body>
+</html> 

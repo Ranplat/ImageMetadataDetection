@@ -1,0 +1,12 @@
+[2025-03-12 15:13:20.655] [image_forensics] [info] Logger initialized
+[2025-03-12 15:13:20.655] [image_forensics] [info] Loaded config from: config.json
+[2025-03-12 15:13:20.655] [image_forensics] [info] Initializing file cache at: cache
+[2025-03-12 15:13:20.655] [image_forensics] [info] Cleaning up cache
+[2025-03-12 15:13:20.655] [image_forensics] [info] Cache cleanup completed. Current size: 0 bytes
+[2025-03-12 15:13:20.655] [image_forensics] [info] Initializing image service
+[2025-03-12 15:13:20.655] [image_forensics] [info] Initializing network server
+[2025-03-12 15:13:20.655] [image_forensics] [info] Registering route: GET /health
+[2025-03-12 15:13:20.655] [image_forensics] [info] Registering route: POST /metadata
+[2025-03-12 15:13:20.655] [image_forensics] [info] Registering route: POST /metadata/batch
+[2025-03-12 15:13:20.655] [image_forensics] [info] Registering route: POST /forensics
+[2025-03-12 15:13:20.655] [image_forensics] [info] Starting server on port 8080 with 4 threads

@@ -1,0 +1,50 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 8080,
+        "threads": 4,
+        "max_request_size": 10485760,
+        "timeout": 30
+    },
+    "logging": {
+        "level": "info",
+        "file": "data/logs/image_forensics.log",
+        "max_size": 10485760,
+        "max_files": 5,
+        "console_output": true
+    },
+    "storage": {
+        "cache_enabled": true,
+        "cache_dir": "cache",
+        "cache_max_size": 104857600,
+        "cache_expiration": 86400
+    },
+    "metadata": {
+        "supported_formats": ["jpg", "jpeg", "png", "tiff", "bmp", "gif"],
+        "extract_all": true,
+        "extract_gps": true,
+        "extract_exif": true,
+        "extract_iptc": true,
+        "extract_xmp": true
+    },
+    "forensics": {
+        "check_metadata_consistency": true,
+        "check_thumbnail_mismatch": true,
+        "check_compression_artifacts": true,
+        "check_noise_patterns": true,
+        "sensitivity": "medium"
+    },
+    "security": {
+        "enable_cors": true,
+        "allowed_origins": ["*"],
+        "rate_limit": {
+            "enabled": true,
+            "requests_per_minute": 60
+        }
+    },
+    "advanced": {
+        "debug_mode": false,
+        "performance_logging": false,
+        "worker_threads": 2
+    }
+}
